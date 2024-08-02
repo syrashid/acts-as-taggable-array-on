@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'pry'
 
 module ActsAsTaggableArrayOn
   module Taggable
@@ -20,10 +21,16 @@ module ActsAsTaggableArrayOn
 
         self.class.class_eval do
           define_method :"all_#{tag_name}" do |options = {}, &block|
-            subquery_scope = unscoped.select("unnest(#{table_name}.#{tag_name}) as tag").distinct
-            subquery_scope = subquery_scope.instance_eval(&block) if block
-            # Remove the STI inheritance type from the outer query since it is in the subquery
-            unscope(where: :type).from(subquery_scope).pluck(:tag)
+            # Handles the unique case of prepending method with "where("tag like ?", "aws%")"
+            special_prepend_condition = current_scope&.where_clause&.send(:predicates)&.any? { |pred| pred.to_s.include?('tag') }
+            if current_scope && !special_prepend_condition
+              current_scope.pluck(tag_name).flatten.uniq
+            else
+              subquery_scope = unscoped.select("unnest(#{table_name}.#{tag_name}) as tag").distinct
+              subquery_scope = subquery_scope.instance_eval(&block) if block
+              # Remove the STI inheritance type from the outer query since it is in the subquery
+              unscope(where: :type).from(subquery_scope).pluck(:tag)
+            end
           end
 
           define_method :"#{tag_name}_cloud" do |options = {}, &block|
