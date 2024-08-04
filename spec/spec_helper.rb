@@ -47,6 +47,7 @@ def create_database
       t.integer :codes, array: true, default: []
       t.citext :roles, array: true, default: []
       t.uuid :references, array: true, default: []
+      t.boolean :active, default: false
       t.timestamps null: true
     end
   end

@@ -3,10 +3,10 @@ require "spec_helper"
 
 describe ActsAsTaggableArrayOn::Taggable do
   before do
-    @user1 = User.create name: "Tom", colors: ["red", "blue"], sizes: ["medium", "large"], codes: [456, 789], roles: ["user"], references: ["308f35c6-f819-4faa-9bba-2457de1dde25"]
-    @user2 = User.create name: "Ken", colors: ["black", "white", "red"], sizes: ["small", "large"], codes: [123, 789], roles: ["User"], references: ["e32434a0-39c2-44cc-9c1e-f4c7eebaafb3"]
+    @user1 = User.create name: "Tom", colors: ["red", "blue"], sizes: ["medium", "large"], codes: [456, 789], roles: ["user"], references: ["308f35c6-f819-4faa-9bba-2457de1dde25"], active: true
+    @user2 = User.create name: "Ken", colors: ["black", "white", "red"], sizes: ["small", "large"], codes: [123, 789], roles: ["User"], references: ["e32434a0-39c2-44cc-9c1e-f4c7eebaafb3"], active: true
     @user3 = User.create name: "Joe", colors: ["black", "blue"], sizes: ["small", "medium", "large"], codes: [123, 456, 789], roles: ["login"], references: ["41d9033b-80e1-4784-90f6-0c9eb7537cac"]
-    @admin1 = Admin.create name: "Dick", colors: ["purple", "orange"], sizes: ["medium", "large"], codes: [123, 456, 789], roles: ["USER", "Admin"], references: ["308f35c6-f819-4faa-9bba-2457de1dde25", "e32434a0-39c2-44cc-9c1e-f4c7eebaafb3"]
+    @admin1 = Admin.create name: "Dick", colors: ["purple", "orange"], sizes: ["medium", "large"], codes: [123, 456, 789], roles: ["USER", "Admin"], references: ["308f35c6-f819-4faa-9bba-2457de1dde25", "e32434a0-39c2-44cc-9c1e-f4c7eebaafb3"], active: true
     @admin2 = Admin.create name: "Harry", colors: ["white", "blue"], sizes: ["small", "large"], codes: [456, 123], roles: ["Admin"], references: ["41d9033b-80e1-4784-90f6-0c9eb7537cac"]
 
     User.acts_as_taggable_array_on :colors
@@ -14,6 +14,8 @@ describe ActsAsTaggableArrayOn::Taggable do
     User.acts_as_taggable_array_on :roles
     User.acts_as_taggable_array_on :references
     User.taggable_array :codes
+
+    User.scope :active, -> { where(active: true) }
 
   end
 
