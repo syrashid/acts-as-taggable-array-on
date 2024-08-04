@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-require 'pry'
+
+require "pry"
 
 module ActsAsTaggableArrayOn
   module Taggable
@@ -22,7 +23,7 @@ module ActsAsTaggableArrayOn
         self.class.class_eval do
           define_method :"all_#{tag_name}" do |options = {}, &block|
             # Handles the unique case of prepending method with "where("tag like ?", "aws%")"
-            missing_like_tag_prepend = current_scope&.where_clause&.send(:predicates)&.none? { |pred| pred.to_s.include?('tag like') }
+            missing_like_tag_prepend = current_scope&.where_clause&.send(:predicates)&.none? { |pred| pred.to_s.include?("tag like") }
             if current_scope && missing_like_tag_prepend
               # For relations
               current_scope.pluck(tag_name).flatten.uniq
@@ -37,7 +38,7 @@ module ActsAsTaggableArrayOn
 
           define_method :"#{tag_name}_cloud" do |options = {}, &block|
             # Handles the unique case of prepending method with "where("tag like ?", "aws%")"
-            missing_like_tag_prepend = current_scope&.where_clause&.send(:predicates)&.none? { |pred| pred.to_s.include?('tag like') }
+            missing_like_tag_prepend = current_scope&.where_clause&.send(:predicates)&.none? { |pred| pred.to_s.include?("tag like") }
             if current_scope && missing_like_tag_prepend
               # For relations
               current_scope.pluck(tag_name).flatten.group_by(&:itself).transform_values(&:count)

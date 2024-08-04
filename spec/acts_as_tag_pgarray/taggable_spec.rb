@@ -1,5 +1,6 @@
-
 require "spec_helper"
+
+class Dummy < ActiveRecord::Base; end
 
 describe ActsAsTaggableArrayOn::Taggable do
   before do
@@ -17,12 +18,10 @@ describe ActsAsTaggableArrayOn::Taggable do
 
     User.scope :active, -> { where(active: true) }
     User.scope :inactive, -> { where(active: false) }
-
   end
 
   context "without database table" do
     it "doesn't fail on class method call" do
-      class Dummy < ActiveRecord::Base; end
       Dummy.acts_as_taggable_array_on :tags
     end
   end
