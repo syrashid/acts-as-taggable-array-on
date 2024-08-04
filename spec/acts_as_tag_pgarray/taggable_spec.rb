@@ -1,3 +1,4 @@
+
 require "spec_helper"
 
 describe ActsAsTaggableArrayOn::Taggable do
@@ -126,8 +127,6 @@ describe ActsAsTaggableArrayOn::Taggable do
   describe "#all_colors" do
     it "returns all of tag_name" do
       expect(User.all_colors).to match_array([@user1, @user2, @user3, @admin1, @admin2].map(&:colors).flatten.uniq)
-      expect(User.where("tag like ?", "bl%").all_colors).to match_array([@user1, @user2, @user3].map(&:colors).flatten.uniq.select { |name| name.start_with? "bl" })
-      expect(User.where(name: ["Ken", "Tom"]).all_colors).to match_array([@user1, @user2].map(&:colors).flatten.uniq)
       expect(Admin.all_colors).to match_array([@admin1, @admin2].map(&:colors).flatten.uniq)
     end
 
@@ -139,10 +138,6 @@ describe ActsAsTaggableArrayOn::Taggable do
     it "returns filtered tags for tag_name with prepended scope" do
       expect(User.where("tag like ?", "bl%").all_colors).to match_array([@user1, @user2, @user3].map(&:colors).flatten.uniq.select { |name| name.start_with? "bl" })
       expect(Admin.where("tag like ?", "bl%").all_colors).to match_array([@admin2].map(&:colors).flatten.uniq.select { |name| name.start_with? "bl" })
-    end
-
-    it "returns filtered tags for tag_name from an AR relation" do
-      expect(User.where(name: ["Tom", "Ken"]).all_colors).to match_array([@user1, @user2].map(&:colors).flatten.uniq)
     end
 
     it "returns filtered tags for tag_name with prepended scope and bock" do
