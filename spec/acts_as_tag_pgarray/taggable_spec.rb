@@ -16,6 +16,7 @@ describe ActsAsTaggableArrayOn::Taggable do
     User.taggable_array :codes
 
     User.scope :active, -> { where(active: true) }
+    User.scope :inactive, -> { where(active: false) }
 
   end
 
@@ -145,6 +146,11 @@ describe ActsAsTaggableArrayOn::Taggable do
     it "returns filtered tags for tag_name with prepended scope and bock" do
       expect(User.where("tag like ?", "bl%").all_colors { where(name: ["Ken", "Joe"]) }).to match_array([@user2, @user3].map(&:colors).flatten.uniq.select { |name| name.start_with? "bl" })
     end
+
+    it "returns filtered tags for tag_name from a scoped relation" do
+      expect(User.active.all_colors).to match_array([@user1, @user2, @admin1].map(&:colors).flatten.uniq)
+      expect(User.inactive.all_colors).to match_array([@user3, @admin2].map(&:colors).flatten.uniq)
+    end
   end
 
   describe "#colors_cloud" do
@@ -169,6 +175,15 @@ describe ActsAsTaggableArrayOn::Taggable do
     it "returns filtered tag cloud for tag_name with prepended scope and block" do
       expect(User.where("tag like ?", "bl%").colors_cloud { where(name: ["Ken", "Joe"]) }).to match_array(
         [@user2, @user3].map(&:colors).flatten.group_by(&:to_s).map { |k, v| [k, v.count] }.select { |name, count| name.start_with? "bl" }
+      )
+    end
+
+    it "returns filtered tag cloud for tag_name from a scoped relation" do
+      expect(User.active.colors_cloud).to match_array(
+        [@user1, @user2, @admin1].map(&:colors).flatten.group_by(&:to_s).map { |k, v| [k, v.count] }
+      )
+      expect(User.inactive.colors_cloud).to match_array(
+        [@user3, @admin2].map(&:colors).flatten.group_by(&:to_s).map { |k, v| [k, v.count] }
       )
     end
   end
